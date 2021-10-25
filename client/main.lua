@@ -153,7 +153,7 @@ RegisterCommand('inventory', function()
                                 curVeh = vehicle
                                 CurrentGlovebox = nil
                             else
-                                QBCore.Functions.Notify("Vehicle is locked..", "error")
+                                QBCore.Functions.Notify("Vehicle Locked", "error")
                                 return
                             end
                         else
@@ -462,7 +462,7 @@ AddEventHandler("inventory:client:CraftItems", function(itemName, itemCosts, amo
         isCrafting = false
 	end, function() -- Cancel
 		StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
-        QBCore.Functions.Notify("Failed!", "error")
+        QBCore.Functions.Notify("Failed", "error")
         isCrafting = false
 	end)
 end)
@@ -490,7 +490,7 @@ AddEventHandler('inventory:client:CraftAttachment', function(itemName, itemCosts
         isCrafting = false
 	end, function() -- Cancel
 		StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
-        QBCore.Functions.Notify("Failed!", "error")
+        QBCore.Functions.Notify("Failed", "error")
         isCrafting = false
 	end)
 end)
@@ -511,7 +511,7 @@ AddEventHandler("inventory:client:PickupSnowballs", function()
         TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items["snowball"], "add")
     end, function() -- Cancel
         ClearPedTasks(ped)
-        QBCore.Functions.Notify("Canceled..", "error")
+        QBCore.Functions.Notify("Canceled", "error")
     end)
 end)
 
@@ -738,7 +738,7 @@ RegisterNUICallback('combineWithAnim', function(data)
         TriggerServerEvent('inventory:server:combineItem', combineData.reward, data.requiredItem, data.usedItem)
     end, function() -- Cancel
         StopAnimTask(ped, aDict, aLib, 1.0)
-        QBCore.Functions.Notify("Failed!", "error")
+        QBCore.Functions.Notify("Failed", "error")
     end)
 end)
 
