@@ -714,7 +714,6 @@ end)
 RegisterNUICallback("combineItem", function(data)
     Citizen.Wait(150)
     TriggerServerEvent('inventory:server:combineItem', data.reward, data.fromItem, data.toItem)
-    TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[data.reward], 'add')
 end)
 
 RegisterNUICallback('combineWithAnim', function(data)
@@ -737,7 +736,6 @@ RegisterNUICallback('combineWithAnim', function(data)
     }, {}, {}, function() -- Done
         StopAnimTask(ped, aDict, aLib, 1.0)
         TriggerServerEvent('inventory:server:combineItem', combineData.reward, data.requiredItem, data.usedItem)
-        TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[combineData.reward], 'add')
     end, function() -- Cancel
         StopAnimTask(ped, aDict, aLib, 1.0)
         QBCore.Functions.Notify("Failed!", "error")
