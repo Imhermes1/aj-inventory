@@ -379,6 +379,9 @@ function FormatItemInfo(itemData) {
         } else if (itemData.name == "phone") {
             $(".item-info-title").html('<p>'+itemData.label+'</p>')
             $(".item-info-description").html('<p><strong>Phone Number: </strong><span>' + itemData.info.phone);
+        } else if (itemData.name == "duffel-bag") {
+            $(".item-info-title").html('<p>'+itemData.label+'</p>')
+            $(".item-info-description").html('<p><strong>Bag ID Number: </strong><span>' + itemData.info.bagid);
         } else if (itemData.name == "visa" || itemData.name == "mastercard") {
             $(".item-info-title").html('<p>'+itemData.label+'</p>')
             var str = ""+ itemData.info.cardNumber + "";
@@ -742,7 +745,12 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         }
     } 
 
-    if (fromData !== undefined && fromData.amount >= $toAmount) {       
+    if (fromData !== undefined && fromData.amount >= $toAmount) { 
+        if (fromData.unique && $toAmount > 1) {
+            InventoryError($fromInv, $fromSlot);
+            return;
+        }
+              
         if (($fromInv.attr("data-inventory") == "player" || $fromInv.attr("data-inventory") == "hotbar") && $toInv.attr("data-inventory").split("-")[0] == "itemshop" && $toInv.attr("data-inventory") == "crafting") {
             InventoryError($fromInv, $fromSlot);
             return;
@@ -1442,7 +1450,7 @@ var requiredItemOpen = false;
         
         var per =(totalWeight/1000)/(data.maxweight/100000)
         $(".pro").css("width",per+"%");
-        $("#player-inv-weight").html("Weight: " + (totalWeight / 1000).toFixed(2) + " / " + (data.maxweight / 1000).toFixed(2) + " lbs");
+        $("#player-inv-weight").html("Weight: " + (totalWeight / 1000).toFixed(2) + " / " + (data.maxweight / 1000).toFixed(2) + " kgs");
         playerMaxWeight = data.maxweight;
         if (data.other != null) 
         {
@@ -1451,7 +1459,7 @@ var requiredItemOpen = false;
                 $("#other-inv-label").html(data.other.label);
             } else {
                 $("#other-inv-label").html(data.other.label)
-                $("#other-inv-weight").html("Weight: " + (totalWeightOther / 1000).toFixed(2) + " / " + (data.other.maxweight / 1000).toFixed(2) + " lbs")
+                $("#other-inv-weight").html("Weight: " + (totalWeightOther / 1000).toFixed(2) + " / " + (data.other.maxweight / 1000).toFixed(2) + " kgs")
                 var per12 =(totalWeightOther/1000)/(data.other.maxweight/100000)
                 $(".pro1").css("width",per12+"%");
             }
@@ -1459,7 +1467,7 @@ var requiredItemOpen = false;
             otherLabel = data.other.label;
         } else {
             $("#other-inv-label").html(Inventory.droplabel)
-            $("#other-inv-weight").html("Weight: " + (totalWeightOther / 1000).toFixed(2) + " / " + (Inventory.dropmaxweight / 1000).toFixed(2) + " lbs")
+            $("#other-inv-weight").html("Weight: " + (totalWeightOther / 1000).toFixed(2) + " / " + (Inventory.dropmaxweight / 1000).toFixed(2) + " kgs")
             var per123 =(totalWeightOther/1000)/(Inventory.dropmaxweight/100000)
             $(".pro1").css("width",per123+"%");
             otherMaxWeight = Inventory.dropmaxweight;

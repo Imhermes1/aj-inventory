@@ -1,20 +1,12 @@
+local QBCore = exports['qb-core']:GetCoreObject()
+
 local Drops = {}
 local Trunks = {}
 local Gloveboxes = {}
 local Stashes = {}
 local ShopItems = {}
 
-RegisterServerEvent("inventory:server:LoadDrops")
-AddEventHandler('inventory:server:LoadDrops', function()
-	local src = source
-	if next(Drops) ~= nil then
-		TriggerClientEvent("inventory:client:AddDropItem", -1, dropId, source)
-		TriggerClientEvent("inventory:client:AddDropItem", src, Drops)
-	end
-end)
-
-RegisterServerEvent("inventory:server:addTrunkItems")
-AddEventHandler('inventory:server:addTrunkItems', function(plate, items)
+RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
 	Trunks[plate] = {}
 	Trunks[plate].items = items
 end)
@@ -29,8 +21,7 @@ local function recipeContains(recipe, fromItem)
 	return false
 end
 
-RegisterServerEvent("inventory:server:combineItem")
-AddEventHandler('inventory:server:combineItem', function(item, fromItem, toItem)
+RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
 	local src = source
 	local ply = QBCore.Functions.GetPlayer(src)
 
@@ -58,8 +49,7 @@ AddEventHandler('inventory:server:combineItem', function(item, fromItem, toItem)
 	ply.Functions.RemoveItem(toItem.name, 1)
 end)
 
-RegisterServerEvent("inventory:server:CraftItems")
-AddEventHandler('inventory:server:CraftItems', function(itemName, itemCosts, amount, toSlot, points)
+RegisterNetEvent('inventory:server:CraftItems', function(itemName, itemCosts, amount, toSlot, points)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
 	local amount = tonumber(amount)
@@ -73,8 +63,7 @@ AddEventHandler('inventory:server:CraftItems', function(itemName, itemCosts, amo
 	end
 end)
 
-RegisterServerEvent('inventory:server:CraftAttachment')
-AddEventHandler('inventory:server:CraftAttachment', function(itemName, itemCosts, amount, toSlot, points)
+RegisterNetEvent('inventory:server:CraftAttachment', function(itemName, itemCosts, amount, toSlot, points)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
 	local amount = tonumber(amount)
@@ -88,8 +77,7 @@ AddEventHandler('inventory:server:CraftAttachment', function(itemName, itemCosts
 	end
 end)
 
-RegisterServerEvent("inventory:server:SetIsOpenState")
-AddEventHandler('inventory:server:SetIsOpenState', function(IsOpen, type, id)
+RegisterNetEvent('inventory:server:SetIsOpenState', function(IsOpen, type, id)
 	if not IsOpen then
 		if type == "stash" then
 			Stashes[id].isOpen = false
@@ -101,8 +89,7 @@ AddEventHandler('inventory:server:SetIsOpenState', function(IsOpen, type, id)
 	end
 end)
 
-RegisterServerEvent("inventory:server:GiveItem")
-AddEventHandler('inventory:server:GiveItem', function(name, inventory, item, amount)
+RegisterNetEvent("inventory:server:GiveItem", function(name, inventory, item, amount)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
 	local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(name))
@@ -120,8 +107,7 @@ AddEventHandler('inventory:server:GiveItem', function(name, inventory, item, amo
 	end
 end)
 
-RegisterServerEvent("inventory:server:OpenInventory")
-AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
+RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 	local src = source
 	local ply = Player(src)
 	local Player = QBCore.Functions.GetPlayer(src)
@@ -141,7 +127,7 @@ AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 				end
 				local maxweight = 1000000
 				local slots = 50
-				if other ~= nil then 
+				if other ~= nil then
 					maxweight = other.maxweight ~= nil and other.maxweight or 1000000
 					slots = other.slots ~= nil and other.slots or 50
 				end
@@ -194,7 +180,7 @@ AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 					secondInv.inventory = {}
 					secondInv.slots = 0
 				else
-					if id ~= nil then 
+					if id ~= nil then
 						local ownedItems = GetOwnedVehicleItems(id)
 						if IsVehicleOwned(id) and next(ownedItems) ~= nil then
 							secondInv.inventory = ownedItems
@@ -293,7 +279,7 @@ AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 					else
 						secondInv.slots = QBCore.Config.Player.MaxInvSlots - 1
 					end
-					Citizen.Wait(250)
+					Wait(250)
 				end
 			else
 				if Drops[id] ~= nil and not Drops[id].isOpen then
@@ -319,11 +305,10 @@ AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 		end
 	else
 		TriggerClientEvent('QBCore:Notify', src, 'Not Accessible', 'error')
-	end 	
+	end
 end)
 
-RegisterServerEvent("inventory:server:SaveInventory")
-AddEventHandler('inventory:server:SaveInventory', function(type, id)
+RegisterNetEvent('inventory:server:SaveInventory', function(type, id)
 	if type == "trunk" then
 		if (IsVehicleOwned(id)) then
 			SaveOwnedVehicleItems(id, Trunks[id].items)
@@ -349,8 +334,7 @@ AddEventHandler('inventory:server:SaveInventory', function(type, id)
 	end
 end)
 
-RegisterServerEvent("inventory:server:UseItemSlot")
-AddEventHandler('inventory:server:UseItemSlot', function(slot)
+RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
 	local itemData = Player.Functions.GetItemBySlot(slot)
@@ -375,8 +359,7 @@ AddEventHandler('inventory:server:UseItemSlot', function(slot)
 	end
 end)
 
-RegisterServerEvent("inventory:server:UseItem")
-AddEventHandler('inventory:server:UseItem', function(inventory, item)
+RegisterNetEvent('inventory:server:UseItem', function(inventory, item)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
 	if inventory == "player" or inventory == "hotbar" then
@@ -387,8 +370,8 @@ AddEventHandler('inventory:server:UseItem', function(inventory, item)
 	end
 end)
 
-RegisterServerEvent("inventory:server:SetInventoryData")
-AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
+
+RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
 	local fromSlot = tonumber(fromSlot)
@@ -793,7 +776,7 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 			if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
 				price = tonumber(itemData.price)
 				if Player.Functions.RemoveMoney("cash", price, "dealer-item-bought") then
-					itemData.info.serie = tostring(Config.RandomInt(2) .. Config.RandomStr(3) .. Config.RandomInt(1) .. Config.RandomStr(2) .. Config.RandomInt(3) .. Config.RandomStr(4))
+					itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
 					Player.Functions.AddItem(itemData.name, 1, toSlot, itemData.info)
 					TriggerClientEvent('qb-drugs:client:updateDealerItems', src, itemData, 1)
 					TriggerClientEvent('QBCore:Notify', src, itemInfo["label"] .. " bought!", "success")
@@ -813,8 +796,9 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 			end
 		elseif QBCore.Shared.SplitStr(shopType, "_")[1] == "Itemshop" then
 			if Player.Functions.RemoveMoney("cash", price, "itemshop-bought-item") then
-                if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
-                    itemData.info.serie = tostring(Config.RandomInt(2) .. Config.RandomStr(3) .. Config.RandomInt(1) .. Config.RandomStr(2) .. Config.RandomInt(3) .. Config.RandomStr(4))
+				if itemData.name == 'duffel-bag' then itemData.info.bagid = math.random(11111,99999) end
+                	if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
+                    itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
                 end
 				Player.Functions.AddItem(itemData.name, fromAmount, toSlot, itemData.info)
 				TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
@@ -823,7 +807,7 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 			elseif bankBalance >= price then
 				Player.Functions.RemoveMoney("bank", price, "itemshop-bought-item")
                 if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
-                    itemData.info.serie = tostring(Config.RandomInt(2) .. Config.RandomStr(3) .. Config.RandomInt(1) .. Config.RandomStr(2) .. Config.RandomInt(3) .. Config.RandomStr(4))
+                    itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
                 end
 				Player.Functions.AddItem(itemData.name, fromAmount, toSlot, itemData.info)
 				TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
@@ -939,35 +923,28 @@ function IsVehicleOwned(plate)
     if result then return true else return false end
 end
 
-local function escape_str(s)
-	local in_char  = {'\\', '"', '/', '\b', '\f', '\n', '\r', '\t'}
-	local out_char = {'\\', '"', '/',  'b',  'f',  'n',  'r',  't'}
-	for i, c in ipairs(in_char) do
-	  s = s:gsub(c, '\\' .. out_char[i])
-	end
-	return s
-end
-
 -- Shop Items
 function SetupShopItems(shop, shopItems)
 	local items = {}
 	if shopItems ~= nil and next(shopItems) ~= nil then
 		for k, item in pairs(shopItems) do
 			local itemInfo = QBCore.Shared.Items[item.name:lower()]
-			items[item.slot] = {
-				name = itemInfo["name"],
-				amount = tonumber(item.amount),
-				info = item.info ~= nil and item.info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
-				price = item.price,
-				image = itemInfo["image"],
-				slot = item.slot,
-			}
+			if itemInfo then
+				items[item.slot] = {
+					name = itemInfo["name"],
+					amount = tonumber(item.amount),
+					info = item.info ~= nil and item.info or "",
+					label = itemInfo["label"],
+					description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+					weight = itemInfo["weight"],
+					type = itemInfo["type"],
+					unique = itemInfo["unique"],
+					useable = itemInfo["useable"],
+					price = item.price,
+					image = itemInfo["image"],
+					slot = item.slot,
+				}
+			end
 		end
 	end
 	return items
@@ -976,23 +953,23 @@ end
 -- Stash Items
 function GetStashItems(stashId)
 	local items = {}
-	local result = exports.oxmysql:executeSync('SELECT items FROM stashitems WHERE stash = ?', {stashId})
-	if result[1] ~= nil then 
-		if result[1].items ~= nil then
-			result[1].items = json.decode(result[1].items)
-			if result[1].items ~= nil then 
-				for k, item in pairs(result[1].items) do
-					local itemInfo = QBCore.Shared.Items[item.name:lower()]
+	local result = exports.oxmysql:scalarSync('SELECT items FROM stashitems WHERE stash = ?', {stashId})
+	if result then
+		local stashItems = json.decode(result)
+		if stashItems then
+			for k, item in pairs(stashItems) do
+				local itemInfo = QBCore.Shared.Items[item.name:lower()]
+				if itemInfo then
 					items[item.slot] = {
 						name = itemInfo["name"],
 						amount = tonumber(item.amount),
 						info = item.info ~= nil and item.info or "",
 						label = itemInfo["label"],
 						description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-						weight = itemInfo["weight"], 
-						type = itemInfo["type"], 
-						unique = itemInfo["unique"], 
-						useable = itemInfo["useable"], 
+						weight = itemInfo["weight"],
+						type = itemInfo["type"],
+						unique = itemInfo["unique"],
+						useable = itemInfo["useable"],
 						image = itemInfo["image"],
 						slot = item.slot,
 					}
@@ -1007,8 +984,7 @@ QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(so
 	cb(GetStashItems(stashId))
 end)
 
-RegisterServerEvent('qb-inventory:server:SaveStashItems')
-AddEventHandler('qb-inventory:server:SaveStashItems', function(stashId, items)
+RegisterNetEvent('qb-inventory:server:SaveStashItems', function(stashId, items)
     exports.oxmysql:insert('INSERT INTO stashitems (stash, items) VALUES (:stash, :items) ON DUPLICATE KEY UPDATE items = :items', {
         ['stash'] = stashId,
         ['items'] = json.encode(items)
@@ -1044,10 +1020,10 @@ function AddToStash(stashId, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = slot,
 			}
@@ -1061,10 +1037,10 @@ function AddToStash(stashId, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = otherslot,
 			}
@@ -1076,10 +1052,10 @@ function AddToStash(stashId, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = slot,
 			}
@@ -1109,23 +1085,23 @@ end
 -- Trunk items
 function GetOwnedVehicleItems(plate)
 	local items = {}
-	local result = exports.oxmysql:executeSync('SELECT items FROM trunkitems WHERE plate = ?', {plate})
-	if result[1] ~= nil then
-		if result[1].items ~= nil then
-			result[1].items = json.decode(result[1].items)
-			if result[1].items ~= nil then 
-				for k, item in pairs(result[1].items) do
-					local itemInfo = QBCore.Shared.Items[item.name:lower()]
+	local result = exports.oxmysql:scalarSync('SELECT items FROM trunkitems WHERE plate = ?', {plate})
+	if result then
+		local trunkItems = json.decode(result)
+		if trunkItems then
+			for k, item in pairs(trunkItems) do
+				local itemInfo = QBCore.Shared.Items[item.name:lower()]
+				if itemInfo then
 					items[item.slot] = {
 						name = itemInfo["name"],
 						amount = tonumber(item.amount),
 						info = item.info ~= nil and item.info or "",
 						label = itemInfo["label"],
 						description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-						weight = itemInfo["weight"], 
-						type = itemInfo["type"], 
-						unique = itemInfo["unique"], 
-						useable = itemInfo["useable"], 
+						weight = itemInfo["weight"],
+						type = itemInfo["type"],
+						unique = itemInfo["unique"],
+						useable = itemInfo["useable"],
 						image = itemInfo["image"],
 						slot = item.slot,
 					}
@@ -1166,10 +1142,10 @@ function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = slot,
 			}
@@ -1183,10 +1159,10 @@ function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = otherslot,
 			}
@@ -1198,10 +1174,10 @@ function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = slot,
 			}
@@ -1230,23 +1206,23 @@ end
 -- Glovebox items
 function GetOwnedVehicleGloveboxItems(plate)
 	local items = {}
-	local result = exports.oxmysql:executeSync('SELECT items FROM gloveboxitems WHERE plate = ?', {plate})
-	if result[1] ~= nil then 
-		if result[1].items ~= nil then
-			result[1].items = json.decode(result[1].items)
-			if result[1].items ~= nil then 
-				for k, item in pairs(result[1].items) do
-					local itemInfo = QBCore.Shared.Items[item.name:lower()]
+	local result = exports.oxmysql:scalarSync('SELECT items FROM gloveboxitems WHERE plate = ?', {plate})
+	if result then
+		local gloveboxItems = json.decode(result)
+		if gloveboxItems then
+			for k, item in pairs(gloveboxItems) do
+				local itemInfo = QBCore.Shared.Items[item.name:lower()]
+				if itemInfo then
 					items[item.slot] = {
 						name = itemInfo["name"],
 						amount = tonumber(item.amount),
 						info = item.info ~= nil and item.info or "",
 						label = itemInfo["label"],
 						description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-						weight = itemInfo["weight"], 
-						type = itemInfo["type"], 
-						unique = itemInfo["unique"], 
-						useable = itemInfo["useable"], 
+						weight = itemInfo["weight"],
+						type = itemInfo["type"],
+						unique = itemInfo["unique"],
+						useable = itemInfo["useable"],
 						image = itemInfo["image"],
 						slot = item.slot,
 					}
@@ -1287,10 +1263,10 @@ function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = slot,
 			}
@@ -1304,10 +1280,10 @@ function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = otherslot,
 			}
@@ -1319,10 +1295,10 @@ function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = slot,
 			}
@@ -1361,10 +1337,10 @@ function AddToDrop(dropId, slot, itemName, amount, info)
 			info = info ~= nil and info or "",
 			label = itemInfo["label"],
 			description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-			weight = itemInfo["weight"], 
-			type = itemInfo["type"], 
-			unique = itemInfo["unique"], 
-			useable = itemInfo["useable"], 
+			weight = itemInfo["weight"],
+			type = itemInfo["type"],
+			unique = itemInfo["unique"],
+			useable = itemInfo["useable"],
 			image = itemInfo["image"],
 			slot = slot,
 			id = dropId,
@@ -1411,7 +1387,7 @@ end
 function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
 	local Player = QBCore.Functions.GetPlayer(source)
 	local itemData = Player.Functions.GetItemBySlot(fromSlot)
-	local coords = GetEntityCoords(GetPlayerPed(source)) 
+	local coords = GetEntityCoords(GetPlayerPed(source))
 	if Player.Functions.RemoveItem(itemData.name, itemAmount, itemData.slot) then
 		TriggerClientEvent("inventory:client:CheckWeapon", source, itemData.name)
 		local itemInfo = QBCore.Shared.Items[itemData.name:lower()]
@@ -1425,10 +1401,10 @@ function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
 			info = itemData.info ~= nil and itemData.info or "",
 			label = itemInfo["label"],
 			description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-			weight = itemInfo["weight"], 
-			type = itemInfo["type"], 
-			unique = itemInfo["unique"], 
-			useable = itemInfo["useable"], 
+			weight = itemInfo["weight"],
+			type = itemInfo["type"],
+			unique = itemInfo["unique"],
+			useable = itemInfo["useable"],
 			image = itemInfo["image"],
 			slot = toSlot,
 			id = dropId,
@@ -1449,17 +1425,17 @@ QBCore.Commands.Add("resetinv", "Reset Inventory (Admin Only)", {{name="type", h
 	local invType = args[1]:lower()
 	table.remove(args, 1)
 	local invId = table.concat(args, " ")
-	if invType ~= nil and invId ~= nil then 
+	if invType ~= nil and invId ~= nil then
 		if invType == "trunk" then
-			if Trunks[invId] ~= nil then 
+			if Trunks[invId] ~= nil then
 				Trunks[invId].isOpen = false
 			end
 		elseif invType == "glovebox" then
-			if Gloveboxes[invId] ~= nil then 
+			if Gloveboxes[invId] ~= nil then
 				Gloveboxes[invId].isOpen = false
 			end
 		elseif invType == "stash" then
-			if Stashes[invId] ~= nil then 
+			if Stashes[invId] ~= nil then
 				Stashes[invId].isOpen = false
 			end
 		else
@@ -1495,21 +1471,19 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 					info.gender = Player.PlayerData.charinfo.gender
 					info.nationality = Player.PlayerData.charinfo.nationality
 				elseif itemData["name"] == "driver_license" then
-				        info.firstname = Player.PlayerData.charinfo.firstname
-				        info.lastname = Player.PlayerData.charinfo.lastname
-				        info.birthdate = Player.PlayerData.charinfo.birthdate
-				        info.type = "Class C Driver License"
-				elseif itemData["name"] == "weaponlicense" then
 					info.firstname = Player.PlayerData.charinfo.firstname
 					info.lastname = Player.PlayerData.charinfo.lastname
 					info.birthdate = Player.PlayerData.charinfo.birthdate
+					info.type = "Class C Driver License"
 				elseif itemData["type"] == "weapon" then
 					amount = 1
-					info.serie = tostring(Config.RandomInt(2) .. Config.RandomStr(3) .. Config.RandomInt(1) .. Config.RandomStr(2) .. Config.RandomInt(3) .. Config.RandomStr(4))
+					info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
 				elseif itemData["name"] == "harness" then
 					info.uses = 20
 				elseif itemData["name"] == "markedbills" then
 					info.worth = math.random(5000, 10000)
+				elseif itemData['name'] == 'duffel-bag' then
+					info.bagid = math.random(11111,99999)
 				elseif itemData["name"] == "labkey" then
 					info.lab = exports["qb-methlab"]:GenerateRandomLab()
 				elseif itemData["name"] == "printerdocument" then
@@ -1537,7 +1511,7 @@ QBCore.Commands.Add("randomitems", "Give Random Items (God Only)", {}, false, fu
 	local filteredItems = {}
 	for k, v in pairs(QBCore.Shared.Items) do
 		if QBCore.Shared.Items[k]["type"] ~= "weapon" then
-			table.insert(filteredItems, v)
+			filteredItems[#filteredItems+1] = v
 		end
 	end
 	for i = 1, 10, 1 do
@@ -1548,7 +1522,7 @@ QBCore.Commands.Add("randomitems", "Give Random Items (God Only)", {}, false, fu
 		end
 		if Player.Functions.AddItem(randitem["name"], amount) then
 			TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items[randitem["name"]], 'add')
-            Citizen.Wait(500)
+            Wait(500)
 		end
 	end
 end, "god")
@@ -1561,52 +1535,50 @@ QBCore.Functions.CreateUseableItem("snowball", function(source, item)
     end
 end)
 
-if Config.NormalIDCard then
-	QBCore.Functions.CreateUseableItem("driver_license", function(source, item)
-		for k, v in pairs(QBCore.Functions.GetPlayers()) do
-			local PlayerPed = GetPlayerPed(source)
-			local TargetPed = GetPlayerPed(v)
-			local dist = #(GetEntityCoords(PlayerPed) - GetEntityCoords(TargetPed))
-			if dist < 3.0 then
-				TriggerClientEvent('chat:addMessage', v,  {
-						template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>First Name:</strong> {1} <br><strong>Last Name:</strong> {2} <br><strong>Birth Date:</strong> {3} <br><strong>Licenses:</strong> {4}</div></div>',
-						args = {
-							"Drivers License",
-							item.info.firstname,
-							item.info.lastname,
-							item.info.birthdate,
-							item.info.type
-						}
+QBCore.Functions.CreateUseableItem("driver_license", function(source, item)
+	for k, v in pairs(QBCore.Functions.GetPlayers()) do
+		local PlayerPed = GetPlayerPed(source)
+		local TargetPed = GetPlayerPed(v)
+		local dist = #(GetEntityCoords(PlayerPed) - GetEntityCoords(TargetPed))
+		if dist < 3.0 then
+			TriggerClientEvent('chat:addMessage', v,  {
+					template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>First Name:</strong> {1} <br><strong>Last Name:</strong> {2} <br><strong>Birth Date:</strong> {3} <br><strong>Licenses:</strong> {4}</div></div>',
+					args = {
+						"Drivers License",
+						item.info.firstname,
+						item.info.lastname,
+						item.info.birthdate,
+						item.info.type
 					}
-				)
-			end
+				}
+			)
 		end
-	end)
+	end
+end)
 
-	QBCore.Functions.CreateUseableItem("id_card", function(source, item)
-		for k, v in pairs(QBCore.Functions.GetPlayers()) do
-			local PlayerPed = GetPlayerPed(source)
-			local TargetPed = GetPlayerPed(v)
-			local dist = #(GetEntityCoords(PlayerPed) - GetEntityCoords(TargetPed))
-			if dist < 3.0 then
-				local gender = "Man"
-				if item.info.gender == 1 then
-					gender = "Woman"
-				end
-				TriggerClientEvent('chat:addMessage', v,  {
-						template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>Civ ID:</strong> {1} <br><strong>First Name:</strong> {2} <br><strong>Last Name:</strong> {3} <br><strong>Birthdate:</strong> {4} <br><strong>Gender:</strong> {5} <br><strong>Nationality:</strong> {6}</div></div>',
-						args = {
-							"ID Card",
-							item.info.citizenid,
-							item.info.firstname,
-							item.info.lastname,
-							item.info.birthdate,
-							gender,
-							item.info.nationality
-						}
-					}
-				)
+QBCore.Functions.CreateUseableItem("id_card", function(source, item)
+	for k, v in pairs(QBCore.Functions.GetPlayers()) do
+		local PlayerPed = GetPlayerPed(source)
+		local TargetPed = GetPlayerPed(v)
+		local dist = #(GetEntityCoords(PlayerPed) - GetEntityCoords(TargetPed))
+		if dist < 3.0 then
+			local gender = "Man"
+			if item.info.gender == 1 then
+				gender = "Woman"
 			end
+			TriggerClientEvent('chat:addMessage', v,  {
+					template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>Civ ID:</strong> {1} <br><strong>First Name:</strong> {2} <br><strong>Last Name:</strong> {3} <br><strong>Birthdate:</strong> {4} <br><strong>Gender:</strong> {5} <br><strong>Nationality:</strong> {6}</div></div>',
+					args = {
+						"ID Card",
+						item.info.citizenid,
+						item.info.firstname,
+						item.info.lastname,
+						item.info.birthdate,
+						gender,
+						item.info.nationality
+					}
+				}
+			)
 		end
-	end)
-end
+	end
+end)
